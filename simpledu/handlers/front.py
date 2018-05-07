@@ -2,10 +2,11 @@
 # __author__ : poet
 # Date: 2018/5/7
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, flash, redirect, url_for
+from flask_login import login_user
 
 from simpledu.forms import LoginForm, RegisterForm
-from simpledu.models import Course
+from simpledu.models import Course, User
 
 front  =Blueprint('front', __name__)
 
@@ -15,14 +16,22 @@ def index():
     return render_template('index.html', courses=courses)
 
 
-@front.route('/login')
+@front.route('/login', methods=['GET','POST'])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        login_user(user, form.remember_me.data)
+        return redirect(url_for('.index'))
     return  render_template('login.html', form=form)
 
 
 
-@front.route('/register')
+@front.route('/register',methods=['GET','POST'])
 def register():
     form = RegisterForm()
+    if form.validate_on_submit():
+        form.create_user()
+        flash('注册成功，请登录！','success')
+        return redirect(url_for('.login'))
     return render_template('register.html', form=form)

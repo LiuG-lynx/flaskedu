@@ -1,4 +1,5 @@
 # encoding: utf-8
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 __author__ = 'poet'
@@ -19,7 +20,7 @@ class Base(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     # 权限
